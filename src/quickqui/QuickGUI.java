@@ -51,6 +51,7 @@ import javax.swing.JPanel;
  */
 public class QuickGUI {
 
+	
     /**
      * A parameter provided to describe a GUI element
      */
