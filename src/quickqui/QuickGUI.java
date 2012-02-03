@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Map;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -83,6 +84,7 @@ public class QuickGUI {
          * @return the parameter kind
          */
         public Kind getKind() { return kind; }
+        
         /**
          * Get the value of the parameter
          * @return the parameter value
@@ -201,7 +203,7 @@ public class QuickGUI {
         /**
          * The kinds of simple elements supported
          */
-        enum Kind { BUTTON, LABEL, RADIOBUTTON }
+        enum Kind { BUTTON, LABEL, RADIOBUTTON, CHECKBOX }
         /**
          * The element kind
          */
@@ -225,9 +227,24 @@ public class QuickGUI {
             if(kind==Kind.BUTTON) return makeButton(handler,componentMap);
             else if(kind==Kind.LABEL) return makeLabel(componentMap);
             else if(kind==Kind.RADIOBUTTON) return makeRadioButton(handler, componentMap);
+            else if(kind==Kind.CHECKBOX) return makeCheckBox(handler, componentMap);
+
+            
             else throw new Error("Element kind not supported: "+kind);
         }
         /**
+         * Helper method: create a CheckBox
+         */
+        private JComponent makeCheckBox(ActionListener handler,Map<String, JComponent> componentMap) {
+            String name = Parameter.get(properties,Parameter.Kind.NAME);
+            JCheckBox checkbox = new JCheckBox(Parameter.get(properties,Parameter.Kind.TEXT));
+            checkbox.setActionCommand(name);
+            checkbox.addActionListener(handler);
+            if(name!=null) componentMap.put(name, checkbox);
+            return checkbox;
+			
+		}
+		/**
          * Helper method: create a JLabel
          */
         private JComponent makeLabel(Map<String,JComponent> componentMap) {
@@ -249,7 +266,7 @@ public class QuickGUI {
             return button;
         }
         /**
-         * Helper method: create a JButton
+         * Helper method: create a RadioButton
          */
         private JComponent makeRadioButton(ActionListener handler, Map<String,JComponent> componentMap) {
             String name = Parameter.get(properties,Parameter.Kind.NAME);
@@ -330,6 +347,15 @@ public class QuickGUI {
         
         public QElement radiobutton(Parameter ... spec) { 
             return new QElement(QElement.Kind.RADIOBUTTON,spec);
+        }
+        /**
+         * Create a radiobutton with the given properties
+         * @param spec the properties specifying the radiobutton
+         * @return the radiobutton model
+         */
+        
+        public QElement checkbox(Parameter ... spec) { 
+            return new QElement(QElement.Kind.CHECKBOX,spec);
         }
         /**
          * Create a text property, typically visible in the GUI

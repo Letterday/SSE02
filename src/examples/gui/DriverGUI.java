@@ -60,7 +60,9 @@ public class DriverGUI extends Driver implements ActionListener {
                   button(name("bumpLeft"),text("Left")),
                   button(name("bumpCenter"),text("Center")),
                   button(name("bumpRight"),text("Right")),
-                  radiobutton(name("test"),text("test"))
+                  //radiobutton(name("test"),text("test")),
+                  
+                  checkbox(name("test"),text("test"))
                 ),
                 label(name("status"),text("Initializing"))
               )
