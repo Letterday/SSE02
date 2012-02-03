@@ -66,7 +66,6 @@ public class DriverGUI extends Driver implements ActionListener {
             ;
         }
     }
-
     /**
      * Create GUI and then activate robot server functionality
      */
