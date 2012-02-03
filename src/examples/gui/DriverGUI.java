@@ -59,7 +59,8 @@ public class DriverGUI extends Driver implements ActionListener {
                   label(text("Bump sensor: ")),
                   button(name("bumpLeft"),text("Left")),
                   button(name("bumpCenter"),text("Center")),
-                  button(name("bumpRight"),text("Right"))
+                  button(name("bumpRight"),text("Right")),
+                  radiobutton(name("test"),text("test"))
                 ),
                 label(name("status"),text("Initializing"))
               )
@@ -92,6 +93,7 @@ public class DriverGUI extends Driver implements ActionListener {
     public void actionPerformed(ActionEvent event) {
         if(event.getActionCommand().equals("bumpLeft")) bumpSensor = "LEFT";
         else if(event.getActionCommand().equals("bumpCenter")) bumpSensor = "CENTER";
+        else if(event.getActionCommand().equals("test")) System.out.println("det virker");
         else if(event.getActionCommand().equals("bumpRight")) bumpSensor = "RIGHT";
         else System.err.println("Warning: unknown event "+event);
     }

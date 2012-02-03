@@ -43,6 +43,7 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 
 /**
  * QuickGUI allows concise description of a simple GUI (one frame, buttons, labels, organized into panels)
@@ -200,7 +201,7 @@ public class QuickGUI {
         /**
          * The kinds of simple elements supported
          */
-        enum Kind { BUTTON, LABEL }
+        enum Kind { BUTTON, LABEL, RADIOBUTTON }
         /**
          * The element kind
          */
@@ -223,6 +224,7 @@ public class QuickGUI {
         @Override protected JComponent create(ActionListener handler, Map<String,JComponent> componentMap) {
             if(kind==Kind.BUTTON) return makeButton(handler,componentMap);
             else if(kind==Kind.LABEL) return makeLabel(componentMap);
+            else if(kind==Kind.RADIOBUTTON) return makeRadioButton(handler, componentMap);
             else throw new Error("Element kind not supported: "+kind);
         }
         /**
@@ -234,6 +236,7 @@ public class QuickGUI {
             if(name!=null) componentMap.put(name,label);
             return label;
         }
+        
         /**
          * Helper method: create a JButton
          */
@@ -244,6 +247,17 @@ public class QuickGUI {
             button.addActionListener(handler);
             if(name!=null) componentMap.put(name, button);
             return button;
+        }
+        /**
+         * Helper method: create a JButton
+         */
+        private JComponent makeRadioButton(ActionListener handler, Map<String,JComponent> componentMap) {
+            String name = Parameter.get(properties,Parameter.Kind.NAME);
+            JRadioButton radiobutton = new JRadioButton(Parameter.get(properties,Parameter.Kind.TEXT));
+            radiobutton.setActionCommand(name);
+            radiobutton.addActionListener(handler);
+            if(name!=null) componentMap.put(name, radiobutton);
+            return radiobutton;
         }
         /**
          * For debugging
@@ -307,6 +321,15 @@ public class QuickGUI {
          */
         public QElement label(Parameter ... spec) { 
             return new QElement(QElement.Kind.LABEL,spec);
+        }
+        /**
+         * Create a radiobutton with the given properties
+         * @param spec the properties specifying the radiobutton
+         * @return the radiobutton model
+         */
+        
+        public QElement radiobutton(Parameter ... spec) { 
+            return new QElement(QElement.Kind.RADIOBUTTON,spec);
         }
         /**
          * Create a text property, typically visible in the GUI
