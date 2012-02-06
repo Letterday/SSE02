@@ -33,16 +33,19 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import javax.swing.JLabel;
+import javax.swing.JTextField;
 
 import examples.communication.Driver;
 import quickqui.QuickGUI;
+import shadowrundomain.Roller;
+import shadowrundomain.succes;
 
 /**
  * Extension of the robot driver server to display information in GUI and make
  * control of bumper sensor available as a user interface
  * @author ups
  */
-public class DriverGUI extends Driver implements ActionListener {
+public class ShadowGUI extends Driver implements ActionListener {
     
     /**
      * The specific GUI to use for this application
@@ -52,20 +55,18 @@ public class DriverGUI extends Driver implements ActionListener {
         
         @Override 
         public void build() {
-            frame("Robot",Layout.VERTICAL,
-                label(name("left"),text("Speed of left motor")),
-                label(name("right"),text("Speed of right motor")),
-                panel(Layout.HORIZONTAL,
-                  label(text("Bump sensor: ")),
-                  button(name("bumpLeft"),text("Left")),
-                  button(name("bumpCenter"),text("Center")),
-                  button(name("bumpRight"),text("Right")),
-                  //radiobutton(name("test"),text("test")),
-                  textfield(name("succes"),text("succes")),
-                  checkbox(name("test"),text("test"))
-                ),
-                label(name("status"),text("Initializing"))
-              )
+            frame("Shadowrun",Layout.VERTICAL,
+                
+                 
+                  button(name("roll"),text("roll")),
+                  textfield(name("dice"),text("number of dice")),
+                  checkbox(name("edge"),text("edge")),
+                  label(name("succes"),text("succes=number")),
+                  label(name("glits"),text("glits=false")),
+                  label(name("error"),text("nothing to report"))
+                )
+                
+              
             ;
         }
     }
@@ -73,59 +74,57 @@ public class DriverGUI extends Driver implements ActionListener {
      * Create GUI and then activate robot server functionality
      */
     public static void main(String argv[]) throws IOException {
-        DriverGUI driver = new DriverGUI();
+    	ShadowGUI driver = new ShadowGUI();
         driver.gui = new QuickGUI(new ControlGUI(),driver);
-        driver.main();
+       
     }
 
     /**
      * Bumper sensor memory: contains last value of bumper sensor triggered, "NONE" otherwise
      */
-    private String bumpSensor = "NONE";
+    private boolean edge = false;
     
     /**
      * The GUI 
      */
     private QuickGUI gui;
-    
+    private Roller roller=new Roller();
     /**
      * Respond to GUI events
      */
     @Override
     public void actionPerformed(ActionEvent event) {
-        if(event.getActionCommand().equals("bumpLeft")) bumpSensor = "LEFT";
-        else if(event.getActionCommand().equals("bumpCenter")) bumpSensor = "CENTER";
-        else if(event.getActionCommand().equals("test")) System.out.println("det virker");
-        else if(event.getActionCommand().equals("bumpRight")) bumpSensor = "RIGHT";
+        if(event.getActionCommand().equals("roll")) roll();
+        else if(event.getActionCommand().equals("edge")) edge();
+        
         else System.err.println("Warning: unknown event "+event);
     }
 
-    /**
-     * Respond to a robot drive command received over the network
-     */
-    protected void robotDrive(int left, int right) {
-        JLabel leftLabel = (JLabel)gui.getComponent("left");
-        JLabel rightLabel = (JLabel)gui.getComponent("right");
-        leftLabel.setText("Left="+left);
-        rightLabel.setText("Right="+right);
-        System.out.println("Driving at speed "+left+","+right);
-    }
+    
+    protected void roll() {
+    	JTextField dice =(JTextField) gui.getComponent("dice");
+    	try{
+    	succes result = roller.makeroll(Integer.parseInt(dice.getText()),edge);
 
-    /**
-     * Respond to a robot stop command received over the network
-     */
-    protected void robotStop() {
-        JLabel leftLabel = (JLabel)gui.getComponent("left");
-        JLabel rightLabel = (JLabel)gui.getComponent("right");
-        leftLabel.setText("Left: stopped");
-        rightLabel.setText("Right: stopped");
+    	JLabel succes = (JLabel)gui.getComponent("succes");
+        JLabel glits = (JLabel)gui.getComponent("glits");
+        succes.setText("succes="+result.getSucces());
+        glits.setText("glits="+result.isGlits());
+    	} catch (NumberFormatException e) {
+    	JLabel error = (JLabel)gui.getComponent("error");
+    	error.setText("Thats not a int");
+    	}
+    	
     }
+    
+    protected void edge() {
+    	if (edge){
+    		edge=false;
+    	}
+    	else
+    		edge=true;
 
-    /**
-     * Respond to a read bump sensor event received over the network
-     */
-    protected boolean readBumpSensor(String sensor) {
-        return sensor.equals(bumpSensor);
     }
-
+    
+    
 }

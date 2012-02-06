@@ -45,11 +45,13 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JTextField;
 
 /**
  * QuickGUI allows concise description of a simple GUI (one frame, buttons, labels, organized into panels)
  * to be instantiated as a GUI that can be used from the application.
  * @author ups
+ * Modified by eng
  */
 public class QuickGUI {
 
@@ -203,10 +205,11 @@ public class QuickGUI {
         /**
          * The kinds of simple elements supported
          */
-        enum Kind { BUTTON, LABEL, RADIOBUTTON, CHECKBOX }
+        enum Kind { BUTTON, LABEL, RADIOBUTTON, CHECKBOX, TEXTFIELD }
         /**
          * The element kind
          */
+        
         private Kind kind;
         /**
          * The properties of this element
@@ -228,7 +231,7 @@ public class QuickGUI {
             else if(kind==Kind.LABEL) return makeLabel(componentMap);
             else if(kind==Kind.RADIOBUTTON) return makeRadioButton(handler, componentMap);
             else if(kind==Kind.CHECKBOX) return makeCheckBox(handler, componentMap);
-
+            else if(kind==Kind.TEXTFIELD) return makeTextField(componentMap);
             
             else throw new Error("Element kind not supported: "+kind);
         }
@@ -252,6 +255,15 @@ public class QuickGUI {
             JLabel label = new JLabel(Parameter.get(properties,Parameter.Kind.TEXT));
             if(name!=null) componentMap.put(name,label);
             return label;
+        }
+		/**
+         * Helper method: create a JTextField
+         */
+        private JComponent makeTextField(Map<String,JComponent> componentMap) {
+            String name = Parameter.get(properties,Parameter.Kind.NAME);
+            JTextField TextField = new JTextField(Parameter.get(properties,Parameter.Kind.TEXT));
+            if(name!=null) componentMap.put(name,TextField);
+            return TextField;
         }
         
         /**
@@ -338,6 +350,15 @@ public class QuickGUI {
          */
         public QElement label(Parameter ... spec) { 
             return new QElement(QElement.Kind.LABEL,spec);
+        }
+        /**
+         * Create a textfield with the given properties
+         * @param spec the properties specifying the textfield
+         * @return the textfield model
+         */
+
+        public QElement textfield(Parameter ... spec) { 
+            return new QElement(QElement.Kind.TEXTFIELD,spec);
         }
         /**
          * Create a radiobutton with the given properties
